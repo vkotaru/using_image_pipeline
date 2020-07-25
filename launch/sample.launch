@@ -1,0 +1,4 @@
+<launch>
+  <node name="image_shrinker" pkg="using_image_pipeline" type="image_shrinker" output="screen">
+  </node>
+</launch>

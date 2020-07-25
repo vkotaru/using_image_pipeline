@@ -1,0 +1,20 @@
+<launch>
+
+  <!-- launching the node-let manager -->
+  <node pkg="nodelet" type="nodelet" name="using_image_pipeline_nodelet"  args="manager"/>
+
+  <!-- http://wiki.ros.org/image_proc -->
+  <!-- <node pkg="nodelet" type="nodelet" name="rectify"
+        args="load image_proc/rectify using_image_pipeline_nodelet">
+  </node> -->
+<!-- 
+  <node pkg="nodelet" type="nodelet" name="convert_metric"
+        args="load depth_image_proc/convert_metric using_image_pipeline_nodelet">
+  </node> -->
+
+  <node pkg="nodelet" type="nodelet" name="point_cloud"
+        args="load depth_image_proc/point_cloud_xyz using_image_pipeline_nodelet">
+  </node> 
+
+
+</launch>
