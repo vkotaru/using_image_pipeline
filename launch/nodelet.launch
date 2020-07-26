@@ -1,20 +1,15 @@
 <launch>
+      <!-- launching the nodelet manager -->
+      <node pkg="nodelet" type="nodelet" name="using_image_pipeline_nodelet" args="manager"/>
 
-  <!-- launching the node-let manager -->
-  <node pkg="nodelet" type="nodelet" name="using_image_pipeline_nodelet"  args="manager"/>
+      <!-- launching point_cloud_xyz nodelet from depth_image_proc -->
+      <node pkg="nodelet" type="nodelet" name="point_cloud" args="load depth_image_proc/point_cloud_xyz using_image_pipeline_nodelet">
+      </node>
 
-  <!-- http://wiki.ros.org/image_proc -->
-  <!-- <node pkg="nodelet" type="nodelet" name="rectify"
-        args="load image_proc/rectify using_image_pipeline_nodelet">
-  </node> -->
-<!-- 
-  <node pkg="nodelet" type="nodelet" name="convert_metric"
-        args="load depth_image_proc/convert_metric using_image_pipeline_nodelet">
-  </node> -->
-
-  <node pkg="nodelet" type="nodelet" name="point_cloud"
-        args="load depth_image_proc/point_cloud_xyz using_image_pipeline_nodelet">
-  </node> 
-
-
+      <!-- replace this with a package that publishes /camera_info and /image_rect -->
+      <node pkg="rosbag" type="play" name="player" output="screen" args="--clock /home/kotaru/catkin_ws/bags/sample.bag">
+            <remap from="/sample/camera_info"     to="/camera_info" />
+            <remap from="/sample/image_rect"       to="/image_rect" />
+            <!-- make to sure remap the topics to /camera_info & /image_rect if they are not already published as such-->
+      </node>
 </launch>
