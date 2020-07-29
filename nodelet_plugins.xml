@@ -1,0 +1,9 @@
+<library path="lib/libusing_image_pipeline">
+  <class name="using_image_pipeline/pcl_segmentation"
+	 type="using_image_pipeline::PclSegmentationNodelet"
+	 base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet to segment the XYZ point cloud using PCL.
+    </description>
+  </class>
+</library>

@@ -1,0 +1,8 @@
+<launch>
+      <!-- launching the nodelet manager -->
+      <node pkg="nodelet" type="nodelet" name="using_image_pipeline_nodelet" args="manager"/>
+
+      <!-- launching point_cloud_xyz nodelet from depth_image_proc -->
+      <node pkg="nodelet" type="nodelet" name="point_cloud" args="load depth_image_proc/point_cloud_xyz using_image_pipeline_nodelet" output="screen">
+      </node>
+</launch>
