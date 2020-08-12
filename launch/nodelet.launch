@@ -1,4 +1,6 @@
 <launch>
+      <arg name="bag_filename" default="/home/kotaru/catkin_ws/bags/aug/aug12/test3.bag"/>
+
       <!-- launching the nodelet manager -->
       <node pkg="nodelet" type="nodelet" name="using_image_pipeline_nodelet" args="manager"/>
 
@@ -12,8 +14,10 @@
 
       <!-- replace this with a package that publishes /camera_info and /image_rect -->
       <!-- make to sure remap the topics to /camera_info & /image_rect if they are not already published as such-->
-      <node pkg="rosbag" type="play" name="player" output="screen" args="--clock /home/kotaru/catkin_ws/bags/sample.bag">
-            <remap from="/sample/camera_info"     to="/camera_info" />
-            <remap from="/sample/image_rect"       to="/image_rect" />
+      <node pkg="rosbag" type="play" name="player" output="screen" args="--clock $(arg bag_filename)">
+            <remap from="/camera/depth/camera_info"     to="/camera_info" />
+            <remap from="/camera/depth/image_raw"       to="/image_rect" />
       </node>
+
 </launch>
+
