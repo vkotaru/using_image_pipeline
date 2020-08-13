@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_conversions
   pcl_ros
 )
-find_package(PCL 1.2 REQUIRED)
+# find_package(PCL 1.2 REQUIRED)
 
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations")
@@ -27,7 +27,6 @@ catkin_package(
 
 include_directories(
   include
-  ${PCL_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
 link_directories(${PCL_LIBRARY_DIRS})
@@ -37,5 +36,9 @@ add_dependencies(image_shrinker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXP
 target_link_libraries(image_shrinker  ${DEPENDENCIES} ${catkin_LIBRARIES})
 
 add_library(${PROJECT_NAME} src/nodelets/pcl_segmentation.cpp)
-add_dependencies(${PROJECT_NAME} ${PCL_DEFINITIONS})
-target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES} ${catkin_LIBRARIES})
+# add_dependencies(${PROJECT_NAME} )
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+
+# add_executable(pcl_segmentation_node src/pcl_segmentation_node.cpp)
+# add_dependencies(pcl_segmentation_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(pcl_segmentation_node  ${DEPENDENCIES} ${catkin_LIBRARIES})
