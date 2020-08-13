@@ -1,0 +1,42 @@
+<launch>
+    <arg name="bag_filename" default="/home/kotaru/catkin_ws/bags/aug/aug12/test3.bag"/>
+    <arg name="gui" default="true" />
+
+    <!-- launching the nodelet manager -->
+    <node pkg="nodelet" type="nodelet" name="using_image_pipeline_nodelet" args="manager"/>
+
+    <!-- launching point_cloud_xyz nodelet from depth_image_proc -->
+    <node pkg="nodelet" type="nodelet" name="point_cloud" args="load depth_image_proc/point_cloud_xyz /using_image_pipeline_nodelet" output="screen">
+    </node>
+
+    <node name="multi_plane_sac_segmentation" pkg="nodelet" type="nodelet" args="load jsk_pcl/MultiPlaneSACSegmentation /using_image_pipeline_nodelet" output="screen">
+        <remap from="~input" to="/points"/>
+        <rosparam>
+        use_normal: false
+        use_clusters: false
+        use_imu_parallel: false
+        use_imu_perpendicular: false
+        </rosparam>
+    </node>
+
+
+    <!-- <node name="dynparam_loader" pkg="dynamic_reconfigure" type="dynparam" args="load /multi_plane_sac_segmentation $(find jsk_pcl_ros)/sample/config/sample_multi_plane_sac_segmentation.yaml"/>
+
+    <node name="cluster_indices_decomposer" pkg="nodelet" type="nodelet" args="load jsk_pcl/ClusterPointIndicesDecomposer using_image_pipeline_nodelet" output="screen">
+        <remap from="~input" to="/points"/>
+        <remap from="~target" to="multi_plane_sac_segmentation/output_indices"/>
+    </node>
+
+    <group if="$(arg gui)">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find jsk_pcl_ros)/sample/rviz/multi_plane_sac_segmentation.rviz">
+        </node>
+    </group> -->
+
+    <!-- replace this with a package that publishes /camera_info and /image_rect -->
+    <!-- make to sure remap the topics to /camera_info & /image_rect if they are not already published as such-->
+    <node pkg="rosbag" type="play" name="player" output="screen" args="--clock --loop $(arg bag_filename)">
+        <remap from="/camera/depth/camera_info" to="/camera_info" />
+        <remap from="/camera/depth/image_raw" to="/image_rect" />
+    </node>
+
+</launch>

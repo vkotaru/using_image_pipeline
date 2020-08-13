@@ -56,11 +56,12 @@ void PclSegmentationNodelet::onInit() {
   NODELET_INFO_STREAM("Initialising nodelet... [PclSegmentationNodelet]");
   ros::SubscriberStatusCallback connect_cb = boost::bind(&PclSegmentationNodelet::connectCb, this);
   boost::lock_guard<boost::mutex> lock(connect_mutex_);
-  // pub_planes_ = nh_ptr_->advertise<std_msgs::Float32MultiArray>("planes", 3, connect_cb, connect_cb);
+  pub_planes_ = nh_ptr_->advertise<std_msgs::Float32MultiArray>("planes", 3, connect_cb, connect_cb);
   pub_point_height_ = nh_ptr_->advertise<std_msgs::Float32>("test_msg", 3, connect_cb, connect_cb);
-  // cloud = new pcl::PointCloud<pcl::PointXYZ>::Ptr;
-  // cloud_raw = new pcl::PointCloud<pcl::PointXYZ>::Ptr;
-  // cloud_f = new pcl::PointCloud<pcl::PointXYZ>::Ptr;
+
+  cloud_raw.reset(new pcl::PointCloud<pcl::PointXYZ>);
+  cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+
 }
 
 void PclSegmentationNodelet::connectCb() {
@@ -72,32 +73,29 @@ void PclSegmentationNodelet::pointCb(const sensor_msgs::PointCloud2ConstPtr &poi
   NODELET_DEBUG("PointCloud2 height %f", (double)points_msg->height);
   std::cout << points_msg->height << std::endl;
 
+  // convert points_msg to pcl point cloud
+  pcl::fromROSMsg(*points_msg, *cloud_raw);
+
   std_msgs::Float32 tmp_msg;
-  tmp_msg.data = (float)points_msg->height;
+  tmp_msg.data = (float)cloud_raw->height;
   pub_point_height_.publish(tmp_msg);
 
-  // convert points_msg to pcl point cloud
-  cloud_raw.reset(new pcl::PointCloud<pcl::PointXYZ>);
-//   pcl::fromROSMsg(*points_msg, *cloud_raw);
-
-  // segment planes
-  // planarSegmentation();
-
-  // pub_planes_.publish(msg_planes_);
+  pub_planes_.publish(msg_planes_);
 }
 
-// void PclSegmentationNodelet::planarSegmentation() {
-//   // remove NaN from the point-cloud
+void PclSegmentationNodelet::planarSegmentation() {
+
+  // segment planes
+//   planarSegmentation();
+  // remove NaN from the point-cloud
 //   std::vector<int> tmp;
 //   pcl::removeNaNFromPointCloud(*cloud_raw, *cloud, tmp);
 
-//   // Create the filtering object: downsample the dataset using a leaf size of
-//   // 1cm
+//   Create the filtering object: downsample the dataset using a leaf size of 1cm
 //   float leaf_size = 0.01; // 10cm
 //   pcl::VoxelGrid<pcl::PointXYZ> vg;
-//   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(
-//       new pcl::PointCloud<pcl::PointXYZ>);
-//   vg.setInputCloud(cloud);
+//   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
+//   vg.setInputCloud(cloud_raw);
 //   vg.setLeafSize(leaf_size, leaf_size, leaf_size);
 //   vg.filter(*cloud_filtered);
 
@@ -142,7 +140,7 @@ void PclSegmentationNodelet::pointCb(const sensor_msgs::PointCloud2ConstPtr &poi
 //     *cloud_filtered = *cloud_f;
 //     i++;
 //   }
-// }
+}
 
 } // namespace using_image_pipeline
 
