@@ -1,6 +1,6 @@
 <launch>
-      <!-- <arg name="bag_filename" default="/home/kotaru/catkin_ws/bags/aug/aug12/test3.bag"/> -->
-      <arg name="bag_filename" default="/home/kotaru/catkin_ws/bags/aug/aug14/singleplane1.bag"/>
+      <arg name="bag_filename" default="/home/kotaru/catkin_ws/bags/aug/aug12/test3.bag"/>
+      <!-- <arg name="bag_filename" default="/home/kotaru/catkin_ws/bags/aug/aug14/singleplane1.bag"/> -->
 
       <!-- launching the nodelet manager -->
       <node pkg="nodelet" type="nodelet" name="using_image_pipeline_nodelet" args="manager"/>
@@ -10,7 +10,7 @@
       </node>
 
       <!-- launching point_cloud_xyz nodelet from depth_image_proc -->
-      <node pkg="nodelet" type="nodelet" name="pcl_segmentation" args="load using_image_pipeline/pcl_segmentation using_image_pipeline_nodelet" output="screen">
+      <node pkg="nodelet" type="nodelet" name="transform_cloud" args="load using_image_pipeline/transform_cloud using_image_pipeline_nodelet" output="screen">
       </node>
 
       <!-- replace this with a package that publishes /camera_info and /image_rect -->

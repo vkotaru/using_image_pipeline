@@ -15,11 +15,14 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <pcl/common/transforms.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <ros/ros.h>
 #include <sensor_msgs/point_cloud2_iterator.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float32MultiArray.h>
+
+#include "eigen3/Eigen/Dense"
 
 #include <boost/thread.hpp>
 namespace using_image_pipeline {
@@ -40,6 +43,8 @@ public:
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_raw, cloud, cloud_f, cloud_filtered;
   pcl::PointIndices::Ptr inliers;
   pcl::ModelCoefficients::Ptr coefficients;
+
+  Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
 
   float leaf_size = 0.01; // 10cm
   float dist_thresh = 0.01;
@@ -82,7 +87,7 @@ void PclSegmentationNodelet::onInit() {
 
 void PclSegmentationNodelet::connectCb() {
   boost::lock_guard<boost::mutex> lock(connect_mutex_);
-  sub_points_ = nh_ptr_->subscribe("points", 3, &PclSegmentationNodelet::pointCb, this);
+  sub_points_ = nh_ptr_->subscribe("points_transformed", 3, &PclSegmentationNodelet::pointCb, this);
 }
 
 void PclSegmentationNodelet::pointCb(const sensor_msgs::PointCloud2ConstPtr &points_msg) {
@@ -92,11 +97,12 @@ void PclSegmentationNodelet::pointCb(const sensor_msgs::PointCloud2ConstPtr &poi
   std::cout << points_msg->height << std::endl;
 
   // convert points_msg to pcl point cloud
-  pcl::fromROSMsg(*points_msg, *cloud_raw);
+  pcl::fromROSMsg(*points_msg, *cloud);
+  // pcl::transformPointCloud (*cloud_raw, *cloud, transform);  
   planarSegmentation();
 
   std_msgs::Float32 tmp_msg;
-  tmp_msg.data = (float)cloud_raw->height;
+  tmp_msg.data = (float)cloud->height;
   pub_point_height_.publish(tmp_msg);
 
 }
@@ -105,7 +111,7 @@ void PclSegmentationNodelet::planarSegmentation() {
   boost::lock_guard<boost::mutex> lock(connect_mutex_);
 
   std_msgs::Float32MultiArray msg_planes_;
-  vg.setInputCloud(cloud_raw);
+  vg.setInputCloud(cloud);
   vg.setLeafSize(leaf_size, leaf_size, leaf_size);
   vg.filter(*cloud_filtered);
   std::cout << "PointCloud after filtering has: " << cloud_filtered->size() << " data points." << std::endl; //*
@@ -114,7 +120,7 @@ void PclSegmentationNodelet::planarSegmentation() {
   coefficients.reset(new pcl::ModelCoefficients);
 
   int i = 0, nr_points = (int)cloud_filtered->size();
-  while (cloud_filtered->size() > 0.3 * nr_points) {
+  while (cloud_filtered->size() > 0.1 * nr_points) {
     // Segment the largest planar component from the remaining cloud
     seg.setInputCloud(cloud_filtered);
     seg.segment(*inliers, *coefficients);

@@ -33,6 +33,9 @@
   <exec_depend>std_msgs</exec_depend>
   <!-- <exec_depend>libpcl-all</exec_depend> -->
 
+    <depend>ddynamic_reconfigure</depend>
+
+
   <build_depend>nodelet</build_depend>
   <exec_depend>nodelet</exec_depend>
 

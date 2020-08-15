@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   nodelet
   pcl_conversions
   pcl_ros
+  ddynamic_reconfigure
 )
 # find_package(PCL 1.2 REQUIRED)
 
@@ -35,7 +36,7 @@ add_executable(image_shrinker src/image_shrinker.cpp)
 add_dependencies(image_shrinker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(image_shrinker  ${DEPENDENCIES} ${catkin_LIBRARIES})
 
-add_library(${PROJECT_NAME} src/nodelets/pcl_segmentation.cpp)
+add_library(${PROJECT_NAME} src/nodelets/pcl_segmentation.cpp src/nodelets/transform_cloud.cpp)
 # add_dependencies(${PROJECT_NAME} )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
